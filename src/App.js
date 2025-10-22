@@ -1,8 +1,9 @@
 import React from "react";
-import Main from "./Components/Main";
+import Main from "./Components/Main/Main";
 import * as Env from "./environments";
 import Parse from "parse";
 
+console.log(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY, Env.SERVER_URL);
 Parse.initialize(Env.APPLICATION_ID, Env.JAVASCRIPT_KEY);
 Parse.serverURL = Env.SERVER_URL;
 
