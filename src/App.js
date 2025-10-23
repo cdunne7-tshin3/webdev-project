@@ -1,10 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Main from "./Components/Main";
 import Home from "./Components/Home";
-import LessonDetail from "./Components/LessonDetail";
-import CreateLesson from "./Components/CreateLesson";
+import ClassMain from "./Components/ClassMain";
 import ClassList from "./Components/ClassList";
+import StudentMain from "./Components/StudentMain";
 import StudentList from "./Components/StudentList";
 import * as Env from "./environments";
 import Parse from "parse";
@@ -20,27 +19,18 @@ function App() {
           <Link to="/" style={{ margin: "0 15px" }}>
             Home
           </Link>
-          <Link to="/lessons" style={{ margin: "0 15px" }}>
-            Lessons
-          </Link>
           <Link to="/classes" style={{ margin: "0 15px" }}>
             Classes
           </Link>
           <Link to="/students" style={{ margin: "0 15px" }}>
             Students
           </Link>
-          <Link to="/create" style={{ margin: "0 15px" }}>
-            Create Lesson
-          </Link>
         </nav>
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/lessons" element={<Main />} />
-          <Route path="/lesson/:id" element={<LessonDetail />} />
-          <Route path="/create" element={<CreateLesson />} />
-          <Route path="/classes" element={<ClassList />} />
-          <Route path="/students" element={<StudentList />} />
+          <Route path="/classes" element={<ClassMain />} />
+          <Route path="/students" element={<StudentMain />} />
         </Routes>
       </div>
     </Router>

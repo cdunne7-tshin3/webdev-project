@@ -1,60 +1,26 @@
-import React, { useState, useEffect } from "react";
+// src/Components/ClassList.js
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllClasses, createClass } from "../Common/ClassService";
 
-const ClassList = () => {
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+const ClassList = ({ classes, onCreateClass }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
-
-  const fetchClasses = () => {
-    setLoading(true);
-    getAllClasses()
-      .then((results) => {
-        setClasses(results || []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching classes:", error);
-        setLoading(false);
-      });
-  };
-
-  const handleCreateClass = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
     if (!newClassName.trim()) {
       alert("Please enter a class name");
       return;
     }
-
-    createClass(newClassName, newClassDescription)
-      .then((result) => {
-        console.log("Class created:", result);
-        setNewClassName("");
-        setNewClassDescription("");
-        setShowCreateForm(false);
-        fetchClasses();
-      })
-      .catch((error) => {
-        console.error("Error creating class:", error);
-        alert("Failed to create class");
-      });
+    onCreateClass(newClassName, newClassDescription);
+    setNewClassName("");
+    setNewClassDescription("");
+    setShowCreateForm(false);
   };
 
-  if (loading) {
-    return <div style={{ padding: "20px" }}>Loading classes...</div>;
-  }
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Classes</h1>
-
+    <div>
       {showCreateForm ? (
         <div
           style={{
@@ -65,30 +31,28 @@ const ClassList = () => {
           }}
         >
           <h3>Create New Class</h3>
-          <form onSubmit={handleCreateClass}>
-            <div style={{ marginBottom: "10px" }}>
-              <input
-                type="text"
-                placeholder="Class Name"
-                value={newClassName}
-                onChange={(e) => setNewClassName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  marginBottom: "10px",
-                }}
-              />
-              <textarea
-                placeholder="Description (optional)"
-                value={newClassDescription}
-                onChange={(e) => setNewClassDescription(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  minHeight: "60px",
-                }}
-              />
-            </div>
+          <form onSubmit={handleCreate}>
+            <input
+              type="text"
+              placeholder="Class Name"
+              value={newClassName}
+              onChange={(e) => setNewClassName(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                marginBottom: "10px",
+              }}
+            />
+            <textarea
+              placeholder="Description (optional)"
+              value={newClassDescription}
+              onChange={(e) => setNewClassDescription(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                minHeight: "60px",
+              }}
+            />
             <button
               type="submit"
               style={{
@@ -154,8 +118,8 @@ const ClassList = () => {
                 backgroundColor: "#f9f9f9",
               }}
             >
-              <h3>{classObj.get("name")}</h3>
-              <p>{classObj.get("description") || "No description available"}</p>
+              <h3>{classObj.get("Name")}</h3>
+              <p>{classObj.get("Description") || "No description available"}</p>
               <p style={{ fontSize: "12px", color: "#666" }}>
                 ID: {classObj.id}
               </p>

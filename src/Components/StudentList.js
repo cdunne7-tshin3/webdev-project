@@ -1,93 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import {
-  getAllStudents,
-  getStudentsByClass,
-  createStudent,
-} from "../Common/StudentService";
-import { getAllClasses } from "../Common/ClassService";
+import React, { useState } from "react";
 
-const StudentList = () => {
-  const [searchParams] = useSearchParams();
-  const classId = searchParams.get("classId");
-
-  const [students, setStudents] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+const StudentList = ({ students, classes, classId, onCreateStudent }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
-
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [selectedClassId, setSelectedClassId] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState(classId || "");
 
-  useEffect(() => {
-    fetchData();
-  }, [classId]);
+  const currentClass = classId
+    ? classes.find((c) => c.id === classId)
+    : null;
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const classResults = await getAllClasses();
-      setClasses(classResults || []);
-
-      let studentResults;
-      if (classId) {
-        studentResults = await getStudentsByClass(classId);
-      } else {
-        studentResults = await getAllStudents();
-      }
-      setStudents(studentResults || []);
-
-      if (classId && !selectedClassId) {
-        setSelectedClassId(classId);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateStudent = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!newFirstName.trim() || !newLastName.trim()) {
       alert("Please enter first and last name");
       return;
     }
-
     if (!selectedClassId) {
       alert("Please select a class");
       return;
     }
 
-    createStudent(newFirstName, newLastName, newEmail, selectedClassId)
-      .then((result) => {
-        console.log("Student created:", result);
-        setNewFirstName("");
-        setNewLastName("");
-        setNewEmail("");
-        setShowCreateForm(false);
-        fetchData();
-      })
-      .catch((error) => {
-        console.error("Error creating student:", error);
-        alert("Failed to create student");
-      });
+    onCreateStudent(newFirstName, newLastName, newEmail, selectedClassId);
+    setNewFirstName("");
+    setNewLastName("");
+    setNewEmail("");
+    setShowCreateForm(false);
   };
-
-  if (loading) {
-    return <div style={{ padding: "20px" }}>Loading students...</div>;
-  }
-
-  const currentClass = classId ? classes.find((c) => c.id === classId) : null;
 
   return (
     <div style={{ padding: "20px" }}>
       <h1>
         Students
-        {currentClass && ` in ${currentClass.get("name")}`}
+        {currentClass && ` in ${currentClass.get("Name")}`}
       </h1>
 
       {classId && (
@@ -108,7 +54,7 @@ const StudentList = () => {
           }}
         >
           <h3>Add New Student</h3>
-          <form onSubmit={handleCreateStudent}>
+          <form onSubmit={handleSubmit}>
             <div style={{ display: "grid", gap: "10px", marginBottom: "10px" }}>
               <input
                 type="text"
@@ -142,7 +88,7 @@ const StudentList = () => {
                 <option value="">Select a Class</option>
                 {classes.map((classObj) => (
                   <option key={classObj.id} value={classObj.id}>
-                    {classObj.get("name")}
+                    {classObj.get("Name")}
                   </option>
                 ))}
               </select>
@@ -204,42 +150,16 @@ const StudentList = () => {
         >
           <thead>
             <tr style={{ backgroundColor: "#f2f2f2" }}>
-              <th
-                style={{
-                  padding: "10px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
+              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
                 Name
               </th>
-              <th
-                style={{
-                  padding: "10px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
+              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
                 Email
               </th>
-              <th
-                style={{
-                  padding: "10px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
+              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
                 Class
               </th>
-              <th
-                style={{
-                  padding: "10px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
-                ID
-              </th>
+              <th style={{ padding: "10px", border: "1px solid #ddd" }}>ID</th>
             </tr>
           </thead>
           <tbody>
@@ -253,7 +173,7 @@ const StudentList = () => {
                 </td>
                 <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                   {student.get("Class")
-                    ? student.get("Class").get("name")
+                    ? student.get("Class").get("Name")
                     : "No class assigned"}
                 </td>
                 <td

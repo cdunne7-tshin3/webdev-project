@@ -4,8 +4,8 @@ export const createClass = (Name, Description = "") => {
   console.log("Creating: ", Name);
   const Class = Parse.Object.extend("Class");
   const classObj = new Class();
-  classObj.set("name", Name);
-  classObj.set("description", Description);
+  classObj.set("Name", Name);
+  classObj.set("Description", Description);
 
   return classObj.save().then((result) => {
     return result;
