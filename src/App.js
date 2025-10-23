@@ -4,6 +4,8 @@ import Main from "./Components/Main";
 import Home from "./Components/Home";
 import LessonDetail from "./Components/LessonDetail";
 import CreateLesson from "./Components/CreateLesson";
+import ClassList from "./Components/ClassList";
+import StudentList from "./Components/StudentList";
 import * as Env from "./environments";
 import Parse from "parse";
 
@@ -21,6 +23,12 @@ function App() {
           <Link to="/lessons" style={{ margin: "0 15px" }}>
             Lessons
           </Link>
+          <Link to="/classes" style={{ margin: "0 15px" }}>
+            Classes
+          </Link>
+          <Link to="/students" style={{ margin: "0 15px" }}>
+            Students
+          </Link>
           <Link to="/create" style={{ margin: "0 15px" }}>
             Create Lesson
           </Link>
@@ -31,6 +39,8 @@ function App() {
           <Route path="/lessons" element={<Main />} />
           <Route path="/lesson/:id" element={<LessonDetail />} />
           <Route path="/create" element={<CreateLesson />} />
+          <Route path="/classes" element={<ClassList />} />
+          <Route path="/students" element={<StudentList />} />
         </Routes>
       </div>
     </Router>
