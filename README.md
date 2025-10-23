@@ -1,3 +1,7 @@
+# NAMES:
+Christian Dunne (cdunne7@nd.edu)
+Tristan Shin (tshin3@nd.edu)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
