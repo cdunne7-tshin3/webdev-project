@@ -1,20 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ element: Component, flag, user, setCurrentUser }) => {
-  const navigate = useNavigate();
-  const goBackHandler = () => {
-    navigate(-1);
-  };
   return (
     <div>
       {flag ? (
+        // if authorized, go to the component
         <Component user={user} setCurrentUser={setCurrentUser} />
       ) : (
-        // in reality this will redirect to the auth page
-        <div>
-          <p>Unauthorized!</p>
-          <button onClick={goBackHandler}>Go Back</button>
-        </div>
+        // if not authorized (not logged in) go to auth
+        <Navigate to="/login" replace />
       )}
     </div>
   );

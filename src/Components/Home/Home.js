@@ -43,12 +43,6 @@ const Home = () => {
           </Link>
         </div>
       </div>
-
-      <div style={{ marginTop: "40px" }}>
-        <h3>Statistics</h3>
-        <p>Total Classes: Loading...</p>
-        <p>Last Updated: {new Date().toLocaleDateString()}</p>
-      </div>
     </div>
   );
 };

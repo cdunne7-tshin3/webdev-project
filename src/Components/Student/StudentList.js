@@ -38,8 +38,8 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
 
       {classId && (
         <div style={{ marginBottom: "20px" }}>
-          <a href="/students" style={{ color: "#008CBA" }}>
-            ← View all students
+          <a href="/classes" style={{ color: "#008CBA" }}>
+            ← Back to all classes
           </a>
         </div>
       )}
