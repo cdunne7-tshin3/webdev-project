@@ -1,74 +1,212 @@
-# NAMES:
-Christian Dunne (cdunne7@nd.edu)
-Tristan Shin (tshin3@nd.edu)
+# Class Management System
 
-# Getting Started with Create React App
+**Authors:**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- Christian Dunne (cdunne7@nd.edu)
+- Tristan Shin (tshin3@nd.edu)
+
+## Project Overview
+
+A comprehensive class management platform built with React and Parse (Back4App) that allows teachers to manage classes, students, and attendance tracking with email verification.
+
+## Features
+
+### 1. **Class Management**
+
+- Create and view classes
+- Add descriptions to classes
+- View all students in a class
+
+### 2. **Student Management**
+
+- Add students to classes
+- View all students or filter by class
+- **Search functionality** - Search students by name or email in real-time
+
+### 3. **Attendance Tracking**
+
+- Take attendance for specific class sessions by date
+- Mark students as Present, Absent, or Excused
+- View missed classes by student with dates
+- Track attendance history
+
+### 4. **Email Verification**
+
+- User email verification system
+- Warning banner for unverified emails
+- Mock verification flow (demo mode)
+- Verification status tracking
+
+## Tech Stack
+
+- **Frontend:** React 18, React Router DOM
+- **Backend:** Parse Server (Back4App)
+- **Authentication:** Parse User Authentication
+- **Styling:** Inline CSS
+
+## Database Schema
+
+### User (Parse Built-in)
+
+- username (email)
+- firstName
+- lastName
+- email
+- password
+- customEmailVerified (Boolean)
+
+### Class
+
+- Name (String)
+- Description (String)
+
+### Student
+
+- firstName (String)
+- lastName (String)
+- email (String)
+- Class (Pointer → Class)
+
+### Attendance
+
+- Student (Pointer → Student)
+- Class (Pointer → Class)
+- date (Date)
+- status (String: "present", "absent", "excused")
+
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js installed
+- Back4App account with app created
+
+### Installation
+
+1. **Clone the repository**
+
+```bash
+git clone
+cd
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Configure Back4App**
+
+   - Update `src/environments.js` with your Back4App credentials:
+     - APPLICATION_ID
+     - JAVASCRIPT_KEY
+     - SERVER_URL
+
+4. **Set up Back4App Database Classes**
+
+   Create the following classes in Back4App Dashboard → Database → Browser:
+
+   **Class:**
+
+   - Name (String)
+   - Description (String)
+
+   **Student:**
+
+   - firstName (String)
+   - lastName (String)
+   - email (String)
+   - Class (Pointer → Class)
+
+   **Attendance:**
+
+   - Student (Pointer → Student)
+   - Class (Pointer → Class)
+   - date (Date)
+   - status (String)
+
+   **User (Add custom column):**
+
+   - customEmailVerified (Boolean, default: false)
+
+5. **Run the application**
+
+```bash
+npm start
+```
+
+The app will open at [http://localhost:3000](http://localhost:3000)
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000).
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `build` folder.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Application Routes
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `/` - Landing page (redirects to home or login)
+- `/register` - User registration
+- `/login` - User login
+- `/home` - Dashboard (protected)
+- `/classes` - View and manage classes (protected)
+- `/students` - View and manage students with search (protected)
+- `/attendance` - Take attendance and view missed classes (protected)
+- `/verify-email` - Email verification page (protected)
 
-### `npm run eject`
+## Key Features Explained
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Student Search
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Real-time filtering as you type
+- Searches first name, last name, and email
+- Shows result count
+- Clear button to reset search
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Attendance Tracking
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **Take Attendance:** Select a class and date, mark each student's status
+- **View Missed Classes:** Select a student to see all absences with dates
+- Color-coded status badges (Green=Present, Red=Absent, Orange=Excused)
+
+### Email Verification
+
+- Warning banner appears for unverified users
+- Demo mode displays mock verification token
+- In production, would integrate with email service (SendGrid, AWS SES, etc.)
+- Uses `customEmailVerified` field to track verification status
+
+## Development Notes
+
+- **Email Verification:** Currently in demo mode - shows verification tokens on screen for testing. In production, integrate with an email service.
+- **Parse Restrictions:** The built-in `emailVerified` field is protected by Parse, so we use `customEmailVerified` instead.
+- **Session Storage:** Verification tokens are stored in browser sessionStorage for demo purposes.
+
+## Future Enhancements
+
+- Real email service integration for verification
+- Delete/Edit functionality for classes and students
+- Attendance reports and analytics
+- Export attendance data to CSV
+- Multi-class attendance view
+- Student profile pages
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- [React Documentation](https://reactjs.org/)
+- [Parse Documentation](https://docs.parseplatform.org/)
+- [Back4App Documentation](https://www.back4app.com/docs)
+- [Create React App Documentation](https://facebook.github.io/create-react-app/docs/getting-started)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## License
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project was created for educational purposes.
