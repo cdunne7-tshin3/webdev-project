@@ -1,3 +1,4 @@
+// src/Components/Student/StudentList.js
 import React, { useState } from "react";
 import EditStudentForm from "./EditStudentForm";
 
@@ -12,11 +13,9 @@ const StudentList = ({ students, classes, classId, onCreateStudent, onEditStuden
   const [editLastName, setEditLastName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editClassId, setEditClassId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-
-  const currentClass = classId
-    ? classes.find((c) => c.id === classId)
-    : null;
+  const currentClass = classId ? classes.find((c) => c.id === classId) : null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,6 +35,28 @@ const StudentList = ({ students, classes, classId, onCreateStudent, onEditStuden
     setShowCreateForm(false);
   };
 
+  // Filter students based on search query
+  const filteredStudents = students.filter((student) => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+    const firstName = student.get("firstName")?.toLowerCase() || "";
+    const lastName = student.get("lastName")?.toLowerCase() || "";
+    const fullName = `${firstName} ${lastName}`;
+    const email = student.get("email")?.toLowerCase() || "";
+
+    return (
+      firstName.includes(query) ||
+      lastName.includes(query) ||
+      fullName.includes(query) ||
+      email.includes(query)
+    );
+  });
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>
@@ -50,6 +71,64 @@ const StudentList = ({ students, classes, classId, onCreateStudent, onEditStuden
           </a>
         </div>
       )}
+
+      {/* Search Bar */}
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <div style={{ position: "relative", flex: 1, maxWidth: "500px" }}>
+          <input
+            type="text"
+            placeholder="Search students by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px 40px 10px 15px",
+              fontSize: "16px",
+              border: "2px solid #ddd",
+              borderRadius: "25px",
+              outline: "none",
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = "#008CBA";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = "#ddd";
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={handleClearSearch}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                fontSize: "18px",
+                color: "#999",
+                cursor: "pointer",
+                padding: "5px",
+              }}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <span style={{ color: "#666", fontSize: "14px" }}>
+            Found: {filteredStudents.length}
+          </span>
+        )}
+      </div>
 
       {showCreateForm ? (
         <div
@@ -149,92 +228,106 @@ const StudentList = ({ students, classes, classId, onCreateStudent, onEditStuden
       )}
 
       {students.length > 0 ? (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            border: "1px solid #ddd",
-          }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: "#f2f2f2" }}>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Name
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Email
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Class
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>ID</th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>More</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((student) => (
-              <tr key={student.id}>
-                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                  {student.get("firstName")} {student.get("lastName")}
-                </td>
-                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                  {student.get("email") || "N/A"}
-                </td>
-                <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                  {student.get("Class")
-                    ? student.get("Class").get("Name")
-                    : "No class assigned"}
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    fontSize: "12px",
-                  }}
-                >
-                  {student.id}
-                </td>
-                <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "center" }}>
-                  <button
-                    style={{
-                      marginRight: "5px",
-                      padding: "10px 10px",
-                      backgroundColor: "#008CBA",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      setEditingStudent(student);
-                      setEditFirstName(student.get("firstName"));
-                      setEditLastName(student.get("lastName"));
-                      setEditEmail(student.get("email") || "");
-                      setEditClassId(student.get("Class")?.id || "");
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    style={{
-                      padding: "10px 10px",
-                      backgroundColor: "#f44336",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      onDeleteStudent(student.id)
-                    }}
-                  >
-                    Remove
-                  </button>
-                </td>
+        filteredStudents.length > 0 ? (
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              border: "1px solid #ddd",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#f2f2f2" }}>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Email</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Class</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>ID</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>More</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id}>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("firstName")} {student.get("lastName")}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("email") || "N/A"}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("Class") ? student.get("Class").get("Name") : "No class assigned"}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd", fontSize: "12px" }}>
+                    {student.id}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "center" }}>
+                    <button
+                      style={{
+                        marginRight: "5px",
+                        padding: "10px 10px",
+                        backgroundColor: "#008CBA",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        setEditingStudent(student);
+                        setEditFirstName(student.get("firstName"));
+                        setEditLastName(student.get("lastName"));
+                        setEditEmail(student.get("email") || "");
+                        setEditClassId(student.get("Class")?.id || "");
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        padding: "10px 10px",
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => onDeleteStudent(student.id)}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              backgroundColor: "#f9f9f9",
+              borderRadius: "5px",
+              border: "1px solid #ddd",
+            }}
+          >
+            <p style={{ fontSize: "18px", color: "#666" }}>
+              No students found matching "{searchQuery}"
+            </p>
+            <button
+              onClick={handleClearSearch}
+              style={{
+                marginTop: "10px",
+                padding: "8px 16px",
+                backgroundColor: "#008CBA",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Clear Search
+            </button>
+          </div>
+        )
       ) : (
         <p>
           {classId
@@ -242,6 +335,7 @@ const StudentList = ({ students, classes, classId, onCreateStudent, onEditStuden
             : "No students available. Click 'Add New Student' to create one."}
         </p>
       )}
+
       <EditStudentForm
         student={editingStudent}
         classes={classes}

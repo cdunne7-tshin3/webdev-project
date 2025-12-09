@@ -1,3 +1,4 @@
+// src/Components/Auth/AuthService.js
 import Parse from "parse";
 
 // Back4App setup
@@ -16,6 +17,7 @@ export const createUser = (newUser) => {
   user.set("lastName", newUser.lastName);
   user.set("password", newUser.password);
   user.set("email", newUser.email);
+  // Note: emailVerified cannot be set during signup, Parse manages this field
 
   return user
     .signUp()
