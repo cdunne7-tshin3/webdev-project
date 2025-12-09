@@ -24,7 +24,7 @@ const AuthLogin = ({ setCurrentUser }) => {
       }
       setIsSubmitting(false);
     });
-  }, [isSubmitting]);
+  }, [isSubmitting, loginData, navigate, setCurrentUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

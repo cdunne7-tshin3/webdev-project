@@ -27,7 +27,7 @@ const AuthRegister = ({ setCurrentUser }) => {
       }
       setShouldRegister(false);
     });
-  }, [shouldRegister]);
+  }, [shouldRegister, navigate, newUser, setCurrentUser]);
 
   const updateField = (e) => {
     const field = e.target.name;

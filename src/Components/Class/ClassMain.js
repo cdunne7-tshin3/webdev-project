@@ -1,6 +1,6 @@
 // src/Components/ClassMain.js
 import React, { useState, useEffect } from "react";
-import { getAllClasses, createClass } from "../../Common/Services/ClassService";
+import { getAllClasses, createClass, removeClass } from "../../Common/Services/ClassService";
 import ClassList from "./ClassList";
 
 const ClassMain = () => {
@@ -25,13 +25,28 @@ const ClassMain = () => {
 
   const handleCreateClass = async (name, description) => {
     try {
-      await createClass(name, description);
-      fetchClasses(); // refresh list
+      const createdClass = await createClass(name, description);
+      await fetchClasses(); // refresh list
+      return createdClass;
     } catch (error) {
       console.error("Error creating class:", error);
       alert("Failed to create class");
+      return null;
     }
   };
+
+  const handleRemoveClass = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this class? This cannot be undone.")) return;
+
+    try {
+      await removeClass(id);
+      setClasses((prev) => prev.filter((c) => c.id !== id));
+    } catch (error) {
+      console.error("Error removing class:", error);
+      alert("Failed to remove class");
+    }
+  };
+
 
   if (loading) {
     return <div style={{ padding: "20px" }}>Loading classes...</div>;
@@ -42,6 +57,7 @@ const ClassMain = () => {
       <ClassList
         classes={classes}
         onCreateClass={handleCreateClass}
+        onRemoveClass={handleRemoveClass}
       />
     </div>
   );

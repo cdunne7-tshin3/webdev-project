@@ -1,22 +1,52 @@
 // src/Components/ClassList.js
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { createStudent } from "../../Common/Services/StudentService";
 
-const ClassList = ({ classes, onCreateClass }) => {
+const ClassList = ({ classes, onCreateClass, onRemoveClass }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newClassName, setNewClassName] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
+  const [csvFile, setCsvFile] = useState(null);
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
     if (!newClassName.trim()) {
       alert("Please enter a class name");
       return;
     }
-    onCreateClass(newClassName, newClassDescription);
+
+    const createdClass = await onCreateClass(newClassName, newClassDescription);
+    
+    if (createdClass && csvFile) {
+      importRosterFromCsv(csvFile, createdClass.id);
+    }
+    
     setNewClassName("");
     setNewClassDescription("");
+    setCsvFile(null);
     setShowCreateForm(false);
+  };
+
+  const importRosterFromCsv = (file, classId) => {
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const text = e.target.result;
+      const rows = text.split("\n").map((row) => row.trim()).filter(Boolean);
+
+      for (const row of rows) {
+        const [firstName, lastName, email] = row.split(",");
+
+        if (!firstName || !lastName) continue;
+
+        await createStudent(firstName.trim(), lastName.trim(), email?.trim() || "", classId);
+      }
+
+      alert("Roster imported successfully!");
+    };
+
+    reader.readAsText(file);
   };
 
   return (
@@ -53,6 +83,22 @@ const ClassList = ({ classes, onCreateClass }) => {
                 minHeight: "60px",
               }}
             />
+            <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <label htmlFor="csvUpload">Upload Roster CSV (optional):</label>
+              <input
+                id="csvUpload"
+                type="file"
+                accept=".csv"
+                onChange={(e) => setCsvFile(e.target.files[0] || null)}
+              />
+              {csvFile && (
+                <span style={{ fontSize: "12px", color: "#555" }}>
+                  {csvFile.name}
+                </span>
+              )}
+            </div>
+
+
             <button
               type="submit"
               style={{
@@ -116,6 +162,7 @@ const ClassList = ({ classes, onCreateClass }) => {
                 border: "1px solid #ddd",
                 borderRadius: "5px",
                 backgroundColor: "#f9f9f9",
+                position: "relative",
               }}
             >
               <h3>{classObj.get("Name")}</h3>
@@ -132,6 +179,26 @@ const ClassList = ({ classes, onCreateClass }) => {
               >
                 View Students →
               </Link>
+              <button
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  right: "10px",
+                  padding: "6px 12px",
+                  backgroundColor: "#f44336",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to remove ${classObj.get("Name")}?`)) {
+                    onRemoveClass(classObj.id);
+                  }
+                }}
+              >
+                Remove Class
+              </button>
             </div>
           ))}
         </div>

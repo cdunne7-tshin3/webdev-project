@@ -1,12 +1,18 @@
 // src/Components/Student/StudentList.js
 import React, { useState } from "react";
+import EditStudentForm from "./EditStudentForm";
 
-const StudentList = ({ students, classes, classId, onCreateStudent }) => {
+const StudentList = ({ students, classes, classId, onCreateStudent, onEditStudent, onDeleteStudent }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [selectedClassId, setSelectedClassId] = useState(classId || "");
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [editFirstName, setEditFirstName] = useState("");
+  const [editLastName, setEditLastName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editClassId, setEditClassId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentClass = classId ? classes.find((c) => c.id === classId) : null;
@@ -166,6 +172,7 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
                 required
               >
                 <option value="">Select a Class</option>
+                <option value="">— No Class —</option>
                 {classes.map((classObj) => (
                   <option key={classObj.id} value={classObj.id}>
                     {classObj.get("Name")}
@@ -221,88 +228,106 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
       )}
 
       {students.length > 0 ? (
-        <>
-          {filteredStudents.length > 0 ? (
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                border: "1px solid #ddd",
-              }}
-            >
-              <thead>
-                <tr style={{ backgroundColor: "#f2f2f2" }}>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    Name
-                  </th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    Email
-                  </th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    Class
-                  </th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    ID
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredStudents.map((student) => (
-                  <tr key={student.id}>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {student.get("firstName")} {student.get("lastName")}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {student.get("email") || "N/A"}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {student.get("Class")
-                        ? student.get("Class").get("Name")
-                        : "No class assigned"}
-                    </td>
-                    <td
+        filteredStudents.length > 0 ? (
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              border: "1px solid #ddd",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#f2f2f2" }}>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Email</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>Class</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>ID</th>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>More</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id}>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("firstName")} {student.get("lastName")}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("email") || "N/A"}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                    {student.get("Class") ? student.get("Class").get("Name") : "No class assigned"}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd", fontSize: "12px" }}>
+                    {student.id}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "center" }}>
+                    <button
                       style={{
-                        padding: "10px",
-                        border: "1px solid #ddd",
-                        fontSize: "12px",
+                        marginRight: "5px",
+                        padding: "10px 10px",
+                        backgroundColor: "#008CBA",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        setEditingStudent(student);
+                        setEditFirstName(student.get("firstName"));
+                        setEditLastName(student.get("lastName"));
+                        setEditEmail(student.get("email") || "");
+                        setEditClassId(student.get("Class")?.id || "");
                       }}
                     >
-                      {student.id}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        padding: "10px 10px",
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => onDeleteStudent(student.id)}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              backgroundColor: "#f9f9f9",
+              borderRadius: "5px",
+              border: "1px solid #ddd",
+            }}
+          >
+            <p style={{ fontSize: "18px", color: "#666" }}>
+              No students found matching "{searchQuery}"
+            </p>
+            <button
+              onClick={handleClearSearch}
               style={{
-                padding: "40px",
-                textAlign: "center",
-                backgroundColor: "#f9f9f9",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
+                marginTop: "10px",
+                padding: "8px 16px",
+                backgroundColor: "#008CBA",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
               }}
             >
-              <p style={{ fontSize: "18px", color: "#666" }}>
-                No students found matching "{searchQuery}"
-              </p>
-              <button
-                onClick={handleClearSearch}
-                style={{
-                  marginTop: "10px",
-                  padding: "8px 16px",
-                  backgroundColor: "#008CBA",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Clear Search
-              </button>
-            </div>
-          )}
-        </>
+              Clear Search
+            </button>
+          </div>
+        )
       ) : (
         <p>
           {classId
@@ -310,6 +335,30 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
             : "No students available. Click 'Add New Student' to create one."}
         </p>
       )}
+
+      <EditStudentForm
+        student={editingStudent}
+        classes={classes}
+        firstName={editFirstName}
+        lastName={editLastName}
+        email={editEmail}
+        classId={editClassId}
+        setFirstName={setEditFirstName}
+        setLastName={setEditLastName}
+        setEmail={setEditEmail}
+        setClassId={setEditClassId}
+        onSave={() => {
+          onEditStudent(
+            editingStudent.id,
+            editFirstName,
+            editLastName,
+            editEmail,
+            editClassId
+          );
+          setEditingStudent(null);
+        }}
+        onCancel={() => setEditingStudent(null)}
+      />
     </div>
   );
 };
