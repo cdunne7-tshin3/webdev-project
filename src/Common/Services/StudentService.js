@@ -60,3 +60,32 @@ export const removeStudent = (id) => {
     student.destroy();
   });
 };
+
+export const updateStudent = async (id, firstName, lastName, email, classId) => {
+  const Student = Parse.Object.extend("Student");
+  const query = new Parse.Query(Student);
+
+  try {
+    const student = await query.get(id);
+
+    student.set("firstName", firstName);
+    student.set("lastName", lastName);
+    student.set("email", email);
+
+    if (classId) {
+      const Class = Parse.Object.extend("Class");
+      const classObj = new Class();
+      classObj.id = classId;
+      student.set("Class", classObj);
+    } else {
+      student.unset("Class");
+    }
+
+    const result = await student.save();
+    return result;
+  } catch (err) {
+    console.error("Failed to update student:", err);
+    throw err;
+  }
+};
+

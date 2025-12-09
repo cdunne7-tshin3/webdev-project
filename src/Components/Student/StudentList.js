@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+import EditStudentForm from "./EditStudentForm";
 
-const StudentList = ({ students, classes, classId, onCreateStudent }) => {
+const StudentList = ({ students, classes, classId, onCreateStudent, onEditStudent, onDeleteStudent }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [selectedClassId, setSelectedClassId] = useState(classId || "");
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [editFirstName, setEditFirstName] = useState("");
+  const [editLastName, setEditLastName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editClassId, setEditClassId] = useState("");
+
 
   const currentClass = classId
     ? classes.find((c) => c.id === classId)
@@ -86,6 +93,7 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
                 required
               >
                 <option value="">Select a Class</option>
+                <option value="">— No Class —</option>
                 {classes.map((classObj) => (
                   <option key={classObj.id} value={classObj.id}>
                     {classObj.get("Name")}
@@ -160,6 +168,7 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
                 Class
               </th>
               <th style={{ padding: "10px", border: "1px solid #ddd" }}>ID</th>
+              <th style={{ padding: "10px", border: "1px solid #ddd" }}>More</th>
             </tr>
           </thead>
           <tbody>
@@ -185,6 +194,43 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
                 >
                   {student.id}
                 </td>
+                <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "center" }}>
+                  <button
+                    style={{
+                      marginRight: "5px",
+                      padding: "10px 10px",
+                      backgroundColor: "#008CBA",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setEditingStudent(student);
+                      setEditFirstName(student.get("firstName"));
+                      setEditLastName(student.get("lastName"));
+                      setEditEmail(student.get("email") || "");
+                      setEditClassId(student.get("Class")?.id || "");
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    style={{
+                      padding: "10px 10px",
+                      backgroundColor: "#f44336",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      onDeleteStudent(student.id)
+                    }}
+                  >
+                    Remove
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -196,6 +242,29 @@ const StudentList = ({ students, classes, classId, onCreateStudent }) => {
             : "No students available. Click 'Add New Student' to create one."}
         </p>
       )}
+      <EditStudentForm
+        student={editingStudent}
+        classes={classes}
+        firstName={editFirstName}
+        lastName={editLastName}
+        email={editEmail}
+        classId={editClassId}
+        setFirstName={setEditFirstName}
+        setLastName={setEditLastName}
+        setEmail={setEditEmail}
+        setClassId={setEditClassId}
+        onSave={() => {
+          onEditStudent(
+            editingStudent.id,
+            editFirstName,
+            editLastName,
+            editEmail,
+            editClassId
+          );
+          setEditingStudent(null);
+        }}
+        onCancel={() => setEditingStudent(null)}
+      />
     </div>
   );
 };
