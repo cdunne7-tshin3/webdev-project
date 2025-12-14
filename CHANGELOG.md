@@ -16,3 +16,11 @@ v0.3.0
 - added ProtectedRoute.js in Services (student A)
 - added new auth functionality to routing
 - combined and merged everything into main
+
+v0.4.0
+- added email verification component/functionality
+- added absense tracking
+- added search functionality to all list pages (search sutdents)
+- added ability to edit and delete students and classes from the frontend
+- added functionality to add entire roster data to site automatically using a CSV file upload.
+- combined and merged all conflicts into main
